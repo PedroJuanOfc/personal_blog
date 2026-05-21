@@ -1,0 +1,54 @@
+# General
+.DS_Store
+*.log
+*.tmp
+*.swp
+# Environment variables
+.env
+.env.*
+!.env.example
+
+
+# Frontend (Next.js)
+frontend/node_modules
+frontend/.next
+frontend/out
+frontend/dist
+frontend/build
+# Next.js logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+
+# Backend (Python / FastAPI)
+backend/__pycache__/
+backend/*.py[cod]
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+# Virtual environments
+backend/.venv/
+backend/venv/
+backend/env/
+
+
+# Database
+*.sqlite3
+*.db
+
+
+# Uploads / generated files
+uploads/
+media/
+tmp/
+
+
+# IDE
+.vscode/
+.idea/
+
+
+# OS files
+Thumbs.db
