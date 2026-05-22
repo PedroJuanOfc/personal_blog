@@ -1,21 +1,13 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+load_dotenv()
+connection = psycopg2.connect(os.getenv("DATABASE_URL"))
 
 app = FastAPI()
-
-fake_articles = [
-    {
-        "id": 1,
-        "title": "FastAPI: creating an API from scratch",
-        "category": "Backend",
-        "content": "All the content",
-    },
-    {
-        "id": 2,
-        "title": "How to install Linux",
-        "category": "Linux",
-        "content": "All the content",
-    },
-]
 
 
 @app.get("/")
@@ -25,12 +17,18 @@ def welcome():
 
 @app.get("/articles")
 def articles():
-    return fake_articles
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor.execute("SELECT * FROM articles")
+    results = cursor.fetchall()
+    return results
 
 
 @app.get("/articles/{article_id}")
 def get_article(article_id: int):
-    for article in fake_articles:
-        if article["id"] == article_id:
-            return article
-    raise HTTPException(status_code=404, detail="Article not found")
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor.execute("SELECT * FROM articles WHERE id = %s", (article_id,))
+    result = cursor.fetchone()
+    if result == None:
+        raise HTTPException(status_code=404, detail="Article not found")
+    else:
+        return result
