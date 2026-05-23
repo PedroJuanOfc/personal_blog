@@ -48,6 +48,8 @@ tmp/
 # Personal guides (local only)
 GUIDE.md
 **/GUIDE.md
+CHEATSHEET.md
+**/CHEATSHEET.md
 
 # IDE
 .vscode/

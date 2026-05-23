@@ -10,6 +10,7 @@ services:
       interval: 5s
       retries: 5
     volumes:
+      - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   api:
@@ -18,6 +19,10 @@ services:
       - "8002:8001"
     environment:
       DATABASE_URL: postgresql://pedro:password@db:5432/blog
+      SECRET_KEY: your-secret-key-change-this
     depends_on:
       db:
         condition: service_healthy
+
+volumes:
+  postgres_data:
