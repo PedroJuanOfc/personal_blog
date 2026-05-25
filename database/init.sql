@@ -21,7 +21,8 @@ CREATE TABLE articles (
     content TEXT,
     category_id INT REFERENCES categories(id),
     author_id INT REFERENCES users(id),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    next_article_id INT REFERENCES articles(id)
 );
 
 CREATE TABLE article_tags(
