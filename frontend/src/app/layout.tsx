@@ -35,8 +35,8 @@ export default function RootLayout({
                 Pedro Juan
               </a>
               <div className="flex gap-6 text-sm" style={{ color: "var(--muted)" }}>
-                <a href="/" className="hover:text-white transition-colors">Articles</a>
-                <a href="https://github.com/PedroJuanOfc" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+                <a href="/" className="hover:text-[var(--foreground)] transition-colors">Articles</a>
+                <a href="https://github.com/PedroJuanOfc" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--foreground)] transition-colors">GitHub</a>
               </div>
             </nav>
           </header>
