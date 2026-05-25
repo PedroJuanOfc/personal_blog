@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { API_URL, getToken, authHeaders } from "@/lib/api";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 interface Category {
   id: number;
@@ -89,10 +90,10 @@ export default function EditArticlePage() {
   const inputStyle = { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" };
 
   return (
-    <main className="py-12 max-w-[720px]">
-      <h1 className="text-2xl font-bold mb-8">Edit Article</h1>
+    <main className="py-12">
+      <h1 className="text-2xl font-bold mb-8 max-w-[720px]">Edit Article</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div>
+        <div className="max-w-[720px]">
           <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>Title</label>
           <input
             type="text"
@@ -104,7 +105,7 @@ export default function EditArticlePage() {
           />
         </div>
 
-        <div>
+        <div className="max-w-[720px]">
           <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>Category</label>
           <select
             value={categoryId}
@@ -121,20 +122,11 @@ export default function EditArticlePage() {
         </div>
 
         <div>
-          <label className="block text-sm mb-2" style={{ color: "var(--muted)" }}>
-            Content <span className="font-mono text-xs">(Markdown supported)</span>
-          </label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            rows={20}
-            className="w-full px-4 py-3 rounded text-sm outline-none font-mono leading-7 resize-y"
-            style={inputStyle}
-          />
+          <label className="block text-sm mb-2" style={{ color: "var(--muted)" }}>Content</label>
+          <MarkdownEditor value={content} onChange={setContent} />
         </div>
 
-        <div>
+        <div className="max-w-[720px]">
           <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>Recommended next article <span className="text-xs">(optional)</span></label>
           <select
             value={nextArticleId}
@@ -151,8 +143,8 @@ export default function EditArticlePage() {
           </select>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <div className="flex gap-4">
+        {error && <p className="text-sm text-red-500 max-w-[720px]">{error}</p>}
+        <div className="flex gap-4 max-w-[720px]">
           <button
             type="submit"
             disabled={loading}
