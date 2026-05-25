@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.dependencies import get_current_user
 from psycopg2.extras import RealDictCursor
+from psycopg2 import errors
 from pydantic import BaseModel
 from app.database import connection
 
@@ -46,8 +47,11 @@ def update_category(category_id: int, category: CreateCategory, user_id: int = D
 @router.delete("/categories/{category_id}")
 def delete_category(category_id: int, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("DELETE FROM categories WHERE id = %s", (category_id,))
-    if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Category not found")
-    connection.commit()
-    return {"message": "Category deleted successfully"}
+    try:
+        cursor.execute("DELETE FROM categories WHERE id = %s", (category_id,))
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        connection.commit()
+        return {"message": "Category deleted successfully"}
+    except errors.ForeignKeyViolation:
+        raise HTTPException(status_code=400, detail="Cannot delete category: there are articles using it.")
