@@ -2,11 +2,11 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: blog
-      POSTGRES_USER: pedro
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pedro -d blog"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       retries: 5
     volumes:
@@ -18,10 +18,10 @@ services:
     ports:
       - "8002:8001"
     environment:
-      DATABASE_URL: postgresql://pedro:password@db:5432/blog
-      SECRET_KEY: your-secret-key-change-this
-      REGISTER_SECRET: your-register-secret-change-this
-      ENV: development
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      REGISTER_SECRET: ${REGISTER_SECRET}
+      ENV: ${ENV}
     depends_on:
       db:
         condition: service_healthy
