@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 
 interface Article {
   id: number;
@@ -42,11 +43,8 @@ export default async function ArticlePage({
           {article.title}
         </h1>
 
-        <div
-          className="text-base leading-8 whitespace-pre-wrap"
-          style={{ color: "var(--foreground)" }}
-        >
-          {article.content}
+        <div className="prose prose-invert max-w-none">
+          <ReactMarkdown>{article.content}</ReactMarkdown>
         </div>
       </article>
     </main>

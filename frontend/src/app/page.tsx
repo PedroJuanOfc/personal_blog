@@ -1,4 +1,5 @@
 import Link from "next/link";
+import removeMd from "remove-markdown";
 
 interface Article {
   id: number;
@@ -50,7 +51,7 @@ export default async function Home() {
                     {article.title}
                   </h3>
                   <p className="text-sm line-clamp-2" style={{ color: "var(--muted)" }}>
-                    {article.content}
+                    {removeMd(article.content)}
                   </p>
                 </Link>
               </li>
