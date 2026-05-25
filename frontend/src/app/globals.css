@@ -122,3 +122,23 @@ pre, code {
   font-size: 0.875em;
   color: #1a1a1a;
 }
+
+.prose hr {
+  border: none;
+  border-top: 1px solid #aaaaaa;
+  margin: 2rem 0;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ul li::marker {
+  color: var(--foreground);
+  font-size: 1em;
+}
+
+.prose ol li::marker {
+  color: var(--foreground);
+  font-weight: 600;
+}
