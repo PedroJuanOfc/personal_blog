@@ -22,6 +22,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       REGISTER_SECRET: ${REGISTER_SECRET}
       ENV: ${ENV}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     depends_on:
       db:
         condition: service_healthy
