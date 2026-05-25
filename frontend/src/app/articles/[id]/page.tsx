@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -9,6 +10,8 @@ interface Article {
   content: string;
   category_id: number;
   author_id: number;
+  next_id: number | null;
+  next_title: string | null;
 }
 
 async function getArticle(id: string): Promise<Article | null> {
@@ -39,6 +42,24 @@ export default async function ArticlePage({
         <div className="prose max-w-none">
           <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{article.content}</ReactMarkdown>
         </div>
+
+        {article.next_id && article.next_title && (
+          <div className="mt-16 pt-8" style={{ borderTop: "1px solid var(--border)" }}>
+            <p className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: "var(--muted)" }}>
+              Read next
+            </p>
+            <Link
+              href={`/articles/${article.next_id}`}
+              className="group flex items-center justify-between p-4 rounded-lg transition-colors"
+              style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+            >
+              <span className="font-semibold group-hover:text-[var(--accent)] transition-colors">
+                {article.next_title}
+              </span>
+              <span style={{ color: "var(--accent)" }}>→</span>
+            </Link>
+          </div>
+        )}
       </article>
     </main>
 
