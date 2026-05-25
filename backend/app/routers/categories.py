@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.dependencies import get_current_user
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from app.database import connection
@@ -20,7 +21,7 @@ def categories():
 
 
 @router.post("/categories")
-def create_category(category: CreateCategory):
+def create_category(category: CreateCategory, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
         "INSERT INTO categories(name) VALUES(%s) RETURNING *", (category.name,)
@@ -31,7 +32,7 @@ def create_category(category: CreateCategory):
 
 
 @router.put("/categories/{category_id}")
-def update_category(category_id: int, category: CreateCategory):
+def update_category(category_id: int, category: CreateCategory, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
         "UPDATE categories SET name = %s WHERE id = %s RETURNING *",
@@ -43,7 +44,7 @@ def update_category(category_id: int, category: CreateCategory):
 
 
 @router.delete("/categories/{category_id}")
-def delete_category(category_id: int):
+def delete_category(category_id: int, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute("DELETE FROM categories WHERE id = %s", (category_id,))
     if cursor.rowcount == 0:

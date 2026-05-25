@@ -1,6 +1,8 @@
 from fastapi import FastAPI
+from fastapi.security import HTTPBearer
 from app.routers import articles, categories, auth
 
+security = HTTPBearer()
 app = FastAPI()
 
 app.include_router(articles.router)

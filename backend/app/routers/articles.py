@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.dependencies import get_current_user
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from app.database import connection
@@ -40,7 +41,7 @@ def get_article(article_id: int):
 
 
 @router.post("/articles")
-def create_article(article: ArticleCreate):
+def create_article(article: ArticleCreate, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
         "INSERT INTO articles(title, content, category_id, author_id) VALUES(%s, %s, %s, %s) RETURNING *",
@@ -52,7 +53,7 @@ def create_article(article: ArticleCreate):
 
 
 @router.delete("/articles/{article_id}")
-def delete_article(article_id: int):
+def delete_article(article_id: int, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute("DELETE FROM articles WHERE id = %s", (article_id,))
     if cursor.rowcount == 0:
@@ -62,7 +63,7 @@ def delete_article(article_id: int):
 
 
 @router.put("/articles/{article_id}")
-def update_article(article_id: int, article: ArticleUpdate):
+def update_article(article_id: int, article: ArticleUpdate, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
         "UPDATE articles SET title = %s, content = %s, category_id = %s WHERE id = %s RETURNING *",

@@ -4,3 +4,4 @@ import psycopg2
 
 load_dotenv()
 connection = psycopg2.connect(os.getenv("DATABASE_URL"))
+connection.autocommit = True
