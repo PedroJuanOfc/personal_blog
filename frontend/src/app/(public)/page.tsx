@@ -57,7 +57,7 @@ export default async function Home({
           Pedro Juan.
         </h1>
         <p className="text-base leading-relaxed" style={{ color: "var(--muted)" }}>
-          Software engineer from Brazil. I write about what I learn — Python, backend development, Linux, and building things from scratch.
+          Software engineer from Brazil. I write about what I learn: Python, backend development, Linux, and building things from scratch.
         </p>
       </section>
 

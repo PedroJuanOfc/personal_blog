@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Courier_Prime } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const courierPrime = Courier_Prime({
+  variable: "--font-courier-prime",
   subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -29,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${courierPrime.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-199S16RB7Z" strategy="afterInteractive" />
