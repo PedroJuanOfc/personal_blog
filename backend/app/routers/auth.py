@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from psycopg2.extras import RealDictCursor
 from psycopg2 import errors
 from pydantic import BaseModel
@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+REGISTER_SECRET = os.getenv("REGISTER_SECRET")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ALGORITHM = "HS256"
@@ -29,7 +30,9 @@ router = APIRouter()
 
 
 @router.post("/register")
-def user_register(user: UserCreate):
+def user_register(user: UserCreate, x_register_secret: str = Header(...)):
+    if x_register_secret != REGISTER_SECRET:
+        raise HTTPException(status_code=403, detail="Forbidden")
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     hashed_password = pwd_context.hash(user.password)
     try:

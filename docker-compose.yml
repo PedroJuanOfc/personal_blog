@@ -20,6 +20,8 @@ services:
     environment:
       DATABASE_URL: postgresql://pedro:password@db:5432/blog
       SECRET_KEY: your-secret-key-change-this
+      REGISTER_SECRET: your-register-secret-change-this
+      ENV: development
     depends_on:
       db:
         condition: service_healthy
