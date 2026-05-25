@@ -4,6 +4,16 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { API_URL, getToken, authHeaders } from "@/lib/api";
 
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Article {
+  id: number;
+  title: string;
+}
+
 export default function EditArticlePage() {
   const router = useRouter();
   const params = useParams();
@@ -11,7 +21,10 @@ export default function EditArticlePage() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categoryId, setCategoryId] = useState("1");
+  const [categoryId, setCategoryId] = useState("");
+  const [nextArticleId, setNextArticleId] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -21,7 +34,7 @@ export default function EditArticlePage() {
       router.push("/admin/login");
       return;
     }
-    fetchArticle();
+    Promise.all([fetchArticle(), fetchCategories(), fetchArticles()]);
   }, []);
 
   async function fetchArticle() {
@@ -31,8 +44,19 @@ export default function EditArticlePage() {
       setTitle(article.title);
       setContent(article.content);
       setCategoryId(String(article.category_id));
+      setNextArticleId(article.next_article_id ? String(article.next_article_id) : "");
     }
     setFetching(false);
+  }
+
+  async function fetchCategories() {
+    const res = await fetch(`${API_URL}/categories`);
+    if (res.ok) setCategories(await res.json());
+  }
+
+  async function fetchArticles() {
+    const res = await fetch(`${API_URL}/articles`);
+    if (res.ok) setArticles(await res.json());
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -47,6 +71,7 @@ export default function EditArticlePage() {
         title,
         content,
         category_id: parseInt(categoryId),
+        next_article_id: nextArticleId ? parseInt(nextArticleId) : null,
       }),
     });
 
@@ -61,6 +86,8 @@ export default function EditArticlePage() {
 
   if (fetching) return <main className="py-12"><p style={{ color: "var(--muted)" }}>Loading...</p></main>;
 
+  const inputStyle = { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" };
+
   return (
     <main className="py-12 max-w-[720px]">
       <h1 className="text-2xl font-bold mb-8">Edit Article</h1>
@@ -73,20 +100,26 @@ export default function EditArticlePage() {
             onChange={(e) => setTitle(e.target.value)}
             required
             className="w-full px-4 py-2 rounded text-sm outline-none"
-            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+            style={inputStyle}
           />
         </div>
+
         <div>
-          <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>Category ID</label>
-          <input
-            type="number"
+          <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>Category</label>
+          <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             required
             className="w-full px-4 py-2 rounded text-sm outline-none"
-            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-          />
+            style={inputStyle}
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
         </div>
+
         <div>
           <label className="block text-sm mb-2" style={{ color: "var(--muted)" }}>
             Content <span className="font-mono text-xs">(Markdown supported)</span>
@@ -97,10 +130,28 @@ export default function EditArticlePage() {
             required
             rows={20}
             className="w-full px-4 py-3 rounded text-sm outline-none font-mono leading-7 resize-y"
-            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+            style={inputStyle}
           />
         </div>
-        {error && <p className="text-sm text-red-400">{error}</p>}
+
+        <div>
+          <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>Recommended next article <span className="text-xs">(optional)</span></label>
+          <select
+            value={nextArticleId}
+            onChange={(e) => setNextArticleId(e.target.value)}
+            className="w-full px-4 py-2 rounded text-sm outline-none"
+            style={inputStyle}
+          >
+            <option value="">None</option>
+            {articles
+              .filter((a) => String(a.id) !== String(id))
+              .map((a) => (
+                <option key={a.id} value={a.id}>{a.title}</option>
+              ))}
+          </select>
+        </div>
+
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <div className="flex gap-4">
           <button
             type="submit"
