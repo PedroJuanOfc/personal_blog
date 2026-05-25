@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
 
 interface Article {
   id: number;
@@ -30,23 +31,16 @@ export default async function ArticlePage({
 
   return (
     <main className="max-w-[720px] py-12">
-      <Link
-        href="/"
-        className="text-sm font-mono hover:text-[var(--accent)] transition-colors"
-        style={{ color: "var(--muted)" }}
-      >
-        ← back
-      </Link>
-
-      <article className="mt-10">
+      <article>
         <h1 className="text-3xl font-bold tracking-tight leading-tight mb-8">
           {article.title}
         </h1>
 
-        <div className="prose prose-invert max-w-none">
-          <ReactMarkdown>{article.content}</ReactMarkdown>
+        <div className="prose max-w-none">
+          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{article.content}</ReactMarkdown>
         </div>
       </article>
     </main>
+
   );
 }
