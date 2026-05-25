@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from app.dependencies import get_current_user
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
@@ -25,9 +25,13 @@ router = APIRouter()
 
 
 @router.get("/articles")
-def articles():
+def articles(category_id: Optional[int] = Query(default=None), sort: str = Query(default="newest")):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("SELECT * FROM articles ORDER BY created_at DESC")
+    order = "ASC" if sort == "oldest" else "DESC"
+    if category_id:
+        cursor.execute(f"SELECT * FROM articles WHERE category_id = %s ORDER BY created_at {order}", (category_id,))
+    else:
+        cursor.execute(f"SELECT * FROM articles ORDER BY created_at {order}")
     return cursor.fetchall()
 
 
