@@ -48,7 +48,7 @@ export default async function Home({
   const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
   return (
-    <main>
+    <main className="max-w-[680px]">
       <section className="pt-10 pb-8 border-b" style={{ borderColor: "var(--border)" }}>
         <p className="text-sm font-mono mb-3" style={{ color: "var(--accent)" }}>
           software engineer
