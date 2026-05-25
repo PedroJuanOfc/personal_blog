@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.dependencies import get_current_user
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
+from typing import Optional
 from app.database import connection
 
 
@@ -10,12 +11,14 @@ class ArticleCreate(BaseModel):
     content: str
     category_id: int
     author_id: int
+    next_article_id: Optional[int] = None
 
 
 class ArticleUpdate(BaseModel):
     title: str
     content: str
     category_id: int
+    next_article_id: Optional[int] = None
 
 
 router = APIRouter()
@@ -24,28 +27,34 @@ router = APIRouter()
 @router.get("/articles")
 def articles():
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("SELECT * FROM articles")
-    results = cursor.fetchall()
-    return results
+    cursor.execute("SELECT * FROM articles ORDER BY created_at DESC")
+    return cursor.fetchall()
 
 
 @router.get("/articles/{article_id}")
 def get_article(article_id: int):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("SELECT * FROM articles WHERE id = %s", (article_id,))
+    cursor.execute(
+        """
+        SELECT a.*, n.id AS next_id, n.title AS next_title
+        FROM articles a
+        LEFT JOIN articles n ON a.next_article_id = n.id
+        WHERE a.id = %s
+        """,
+        (article_id,),
+    )
     result = cursor.fetchone()
-    if result == None:
+    if result is None:
         raise HTTPException(status_code=404, detail="Article not found")
-    else:
-        return result
+    return result
 
 
 @router.post("/articles")
 def create_article(article: ArticleCreate, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
-        "INSERT INTO articles(title, content, category_id, author_id) VALUES(%s, %s, %s, %s) RETURNING *",
-        (article.title, article.content, article.category_id, article.author_id),
+        "INSERT INTO articles(title, content, category_id, author_id, next_article_id) VALUES(%s, %s, %s, %s, %s) RETURNING *",
+        (article.title, article.content, article.category_id, article.author_id, article.next_article_id),
     )
     result = cursor.fetchone()
     connection.commit()
@@ -66,8 +75,8 @@ def delete_article(article_id: int, user_id: int = Depends(get_current_user)):
 def update_article(article_id: int, article: ArticleUpdate, user_id: int = Depends(get_current_user)):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
-        "UPDATE articles SET title = %s, content = %s, category_id = %s WHERE id = %s RETURNING *",
-        (article.title, article.content, article.category_id, article_id),
+        "UPDATE articles SET title = %s, content = %s, category_id = %s, next_article_id = %s WHERE id = %s RETURNING *",
+        (article.title, article.content, article.category_id, article.next_article_id, article_id),
     )
     if cursor.rowcount == 0:
         raise HTTPException(status_code=404, detail="Article not found")
