@@ -20,7 +20,8 @@ CREATE TABLE articles (
     title VARCHAR(255) NOT NULL,
     content TEXT,
     category_id INT REFERENCES categories(id),
-    author_id INT REFERENCES users(id)
+    author_id INT REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE article_tags(
