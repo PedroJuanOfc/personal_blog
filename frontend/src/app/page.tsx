@@ -45,23 +45,24 @@ export default async function Home({
     getCategories(),
   ]);
 
+  const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
+
   return (
     <main>
-      <section className="py-16 border-b" style={{ borderColor: "var(--border)" }}>
-        <p className="text-sm font-mono mb-4" style={{ color: "var(--accent)" }}>
+      <section className="pt-10 pb-8 border-b" style={{ borderColor: "var(--border)" }}>
+        <p className="text-sm font-mono mb-3" style={{ color: "var(--accent)" }}>
           software engineer
         </p>
-        <h1 className="text-4xl font-bold tracking-tight mb-4">
-          Hey, I&apos;m Pedro Juan.
+        <h1 className="text-3xl font-bold tracking-tight mb-3">
+          Pedro Juan.
         </h1>
-        <p className="text-lg max-w-xl" style={{ color: "var(--muted)" }}>
-          I write about software engineering, Linux, DevOps, backend development,
-          and everything I learn along the way. Based in Brazil, building things from scratch.
+        <p className="text-base leading-relaxed" style={{ color: "var(--muted)" }}>
+          Software engineer from Brazil. I build things from scratch and write about what I learn: backend, Linux, DevOps, and more.
         </p>
       </section>
 
-      <section className="py-12">
-        <div className="flex items-center justify-between mb-8">
+      <section className="pt-8 pb-12">
+        <div className="flex items-center justify-between mb-6">
           <h2 className="text-sm font-mono uppercase tracking-widest" style={{ color: "var(--muted)" }}>
             Articles
           </h2>
@@ -73,23 +74,33 @@ export default async function Home({
         {articles.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>No articles found.</p>
         ) : (
-          <ul className="flex flex-col divide-y" style={{ borderColor: "var(--border)" }}>
+          <ul className="flex flex-col">
             {articles.map((article) => {
               const raw = removeMd(article.content);
               const preview = raw.length > 140 ? raw.slice(0, 140).trim() + "…" : raw;
+              const categoryName = categoryMap[article.category_id];
               return (
-                <li key={article.id} className="py-6">
+                <li key={article.id} className="py-5 border-b" style={{ borderColor: "var(--border)" }}>
                   <Link href={`/articles/${article.id}`} className="group block">
-                    <h3 className="text-lg font-semibold group-hover:text-[var(--accent)] transition-colors mb-1">
+                    <h3 className="text-base font-semibold mb-1 transition-opacity group-hover:opacity-60">
                       {article.title}
-                      <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                     </h3>
-                    <p className="text-xs font-mono mb-1" style={{ color: "var(--muted)" }}>
-                      {new Date(article.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-                    </p>
-                    <p className="text-sm" style={{ color: "var(--muted)" }}>
+                    <p className="text-sm leading-relaxed mb-3" style={{ color: "var(--muted)" }}>
                       {preview}
                     </p>
+                    <div className="flex items-center gap-2">
+                      {categoryName && (
+                        <span
+                          className="text-xs font-mono px-2 py-0.5 rounded-full"
+                          style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--accent)" }}
+                        >
+                          {categoryName}
+                        </span>
+                      )}
+                      <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
+                        {new Date(article.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               );

@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pedro Juan — Blog",
-  description: "Articles about software engineering, Linux, DevOps, and everything I learn along the way.",
+  title: "pedrojuan.dev",
+  description: "Software engineer from Brazil. Writing about backend development, Linux, DevOps, and everything I build and learn.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -28,11 +31,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
-        <div className="max-w-[1100px] mx-auto px-6">
+        <div className="max-w-[680px] mx-auto px-6">
           <header className="py-8 border-b" style={{ borderColor: "var(--border)" }}>
             <nav className="flex items-center justify-between">
-              <a href="/" className="text-base font-semibold tracking-tight hover:opacity-70 transition-opacity">
-                Pedro Juan
+              <a href="/" className="text-base font-mono font-semibold tracking-tight hover:opacity-70 transition-opacity">
+                pedrojuan.dev
               </a>
               <div className="flex gap-6 text-sm" style={{ color: "var(--muted)" }}>
                 <a href="/" className="hover:text-[var(--foreground)] transition-colors">Articles</a>
