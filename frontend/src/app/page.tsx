@@ -1,5 +1,9 @@
-import Link from "next/link";
 import removeMd from "remove-markdown";
+import Link from "next/link";
+import { Suspense } from "react";
+import ArticleFilters from "@/components/ArticleFilters";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8002";
 
 interface Article {
   id: number;
@@ -10,16 +14,36 @@ interface Article {
   created_at: string;
 }
 
-async function getArticles(): Promise<Article[]> {
-  const res = await fetch("http://localhost:8002/articles", {
-    cache: "no-store",
-  });
+interface Category {
+  id: number;
+  name: string;
+}
+
+async function getArticles(categoryId?: string, sort?: string): Promise<Article[]> {
+  const params = new URLSearchParams();
+  if (categoryId) params.set("category_id", categoryId);
+  if (sort) params.set("sort", sort);
+  const res = await fetch(`${API_URL}/articles?${params.toString()}`, { cache: "no-store" });
   if (!res.ok) return [];
   return res.json();
 }
 
-export default async function Home() {
-  const articles = await getArticles();
+async function getCategories(): Promise<Category[]> {
+  const res = await fetch(`${API_URL}/categories`, { cache: "no-store" });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; sort?: string }>;
+}) {
+  const { category, sort } = await searchParams;
+  const [articles, categories] = await Promise.all([
+    getArticles(category, sort),
+    getCategories(),
+  ]);
 
   return (
     <main>
@@ -37,12 +61,17 @@ export default async function Home() {
       </section>
 
       <section className="py-12">
-        <h2 className="text-sm font-mono uppercase tracking-widest mb-8" style={{ color: "var(--muted)" }}>
-          Articles
-        </h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-sm font-mono uppercase tracking-widest" style={{ color: "var(--muted)" }}>
+            Articles
+          </h2>
+          <Suspense>
+            <ArticleFilters categories={categories} />
+          </Suspense>
+        </div>
 
         {articles.length === 0 ? (
-          <p style={{ color: "var(--muted)" }}>No articles yet. Check back soon.</p>
+          <p style={{ color: "var(--muted)" }}>No articles found.</p>
         ) : (
           <ul className="flex flex-col divide-y" style={{ borderColor: "var(--border)" }}>
             {articles.map((article) => {
