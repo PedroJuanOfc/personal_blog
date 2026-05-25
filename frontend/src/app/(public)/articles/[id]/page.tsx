@@ -10,6 +10,7 @@ interface Article {
   content: string;
   category_id: number;
   author_id: number;
+  created_at: string;
   next_id: number | null;
   next_title: string | null;
 }
@@ -22,6 +23,13 @@ async function getArticle(id: string): Promise<Article | null> {
   return res.json();
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const article = await getArticle(id);
+  if (!article) return {};
+  return { title: `${article.title} — pedrojuan.dev` };
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -32,12 +40,19 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
+  const date = new Date(article.created_at).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <main className="max-w-[720px] py-12">
+    <main className="py-12">
       <article>
-        <h1 className="text-3xl font-bold tracking-tight leading-tight mb-8">
+        <h1 className="text-3xl font-bold tracking-tight leading-tight mb-3">
           {article.title}
         </h1>
+        <p className="text-sm font-mono mb-8" style={{ color: "var(--muted)" }}>{date}</p>
 
         <div className="prose max-w-none">
           <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{article.content}</ReactMarkdown>
