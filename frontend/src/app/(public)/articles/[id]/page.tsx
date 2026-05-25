@@ -55,7 +55,16 @@ export default async function ArticlePage({
         <p className="text-sm font-mono mb-8" style={{ color: "var(--muted)" }}>{date}</p>
 
         <div className="prose max-w-none">
-          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{article.content}</ReactMarkdown>
+          <ReactMarkdown
+            rehypePlugins={[rehypeHighlight]}
+            components={{
+              a: ({ href, children }) => (
+                <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>
+              ),
+            }}
+          >
+            {article.content}
+          </ReactMarkdown>
         </div>
 
         {article.next_id && article.next_title && (
